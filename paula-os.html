@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAULA OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f0d;
+    --surface: #141510;
+    --surface2: #1a1b16;
+    --border: rgba(200,169,110,0.12);
+    --amber: #C8A96E;
+    --amber-dim: rgba(200,169,110,0.5);
+    --amber-faint: rgba(200,169,110,0.08);
+    --teal: #3D5A6E;
+    --teal-light: #5a7a8e;
+    --text: #e8e4d8;
+    --text-dim: rgba(232,228,216,0.45);
+    --text-faint: rgba(232,228,216,0.22);
+    --green: #7a9e7e;
+    --red: #b56b5a;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--amber);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .topbar-title {
+    font-weight: 500;
+    letter-spacing: 0.2em;
+  }
+
+  .topbar-version {
+    color: var(--text-faint);
+    font-size: 9px;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: var(--text-dim);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+
+  .topbar-right span { display: flex; align-items: center; gap: 4px; }
+
+  .dot-live {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* MAIN GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: 220px 1fr 280px;
+    grid-template-rows: auto auto auto;
+    gap: 1px;
+    background: var(--border);
+    min-height: calc(100vh - 37px);
+  }
+
+  .panel {
+    background: var(--bg);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel-label {
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel-label .num {
+    color: var(--amber-dim);
+    margin-right: 8px;
+  }
+
+  /* PANEL 1 — OPERADOR */
+  .panel-operator {
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .avatar-ring {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 1px solid var(--amber-dim);
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--amber);
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+
+  .avatar-ring::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+  }
+
+  .op-name {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    margin-top: 4px;
+  }
+
+  .op-name em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .op-role {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .op-city {
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  .status-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: fit-content;
+  }
+
+  .badge:hover { border-color: var(--amber-dim); color: var(--amber); }
+
+  .badge.active-focus { border-color: var(--amber-dim); color: var(--amber); }
+  .badge.active-dnd { border-color: rgba(181,107,90,0.4); color: var(--red); }
+
+  .badge-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+
+  .tagline {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* PANEL 2 — SESSÃO */
+  .panel-session {
+    grid-column: 2;
+    grid-row: 1;
+    background: var(--surface);
+  }
+
+  .session-greeting {
+    font-family: var(--font-serif);
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .session-greeting em { font-style: italic; color: var(--amber); }
+
+  .session-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
+  .session-date {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .session-clock {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .session-clock .seconds {
+    font-size: 14px;
+    color: var(--text-faint);
+    vertical-align: super;
+    margin-left: 2px;
+  }
+
+  .session-frase {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-left: 2px solid var(--amber-dim);
+    background: var(--amber-faint);
+  }
+
+  .session-frase p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+
+  .session-frase .frase-origem {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* PANEL 3 — VITAIS */
+  .panel-vitais {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .vital-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .vital-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 2px;
+  }
+
+  .vital-label {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+
+  .vital-value {
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .vital-value .unit {
+    font-size: 9px;
+    color: var(--text-faint);
+    margin-left: 2px;
+  }
+
+  .vital-sub {
+    font-size: 8px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+
+  .vital-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .vital-bar-fill {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 1px;
+    transition: width 1s ease;
+  }
+
+  .vital-bar-fill.green { background: var(--green); }
+  .vital-bar-fill.teal { background: var(--teal-light); }
+
+  .rings {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .ring-wrap { text-align: center; }
+
+  .ring-svg { width: 52px; height: 52px; transform: rotate(-90deg); }
+
+  .ring-bg { fill: none; stroke: var(--border); stroke-width: 4; }
+  .ring-fill { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1.5s ease; }
+  .ring-amber { stroke: var(--amber); }
+  .ring-green { stroke: var(--green); }
+  .ring-teal { stroke: var(--teal-light); }
+
+  .ring-label {
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+
+  .garmin-note {
+    font-size: 8px;
+    color: var(--text-faint);
+    text-align: center;
+    padding: 8px;
+    border: 1px dashed var(--border);
+    border-radius: 2px;
+    line-height: 1.5;
+  }
+
+  /* PANEL 4 — CALENDÁRIO */
+  .panel-calendar {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .week-nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .week-day {
+    flex: 1;
+    padding: 8px 4px;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .week-day:hover { border-color: var(--amber-dim); }
+
+  .week-day.today {
+    border-color: var(--amber);
+    background: var(--amber-faint);
+  }
+
+  .week-day-name {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+  }
+
+  .week-day-num {
+    font-size: 16px;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .week-day.today .week-day-num { color: var(--amber); }
+
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .events-list::-webkit-scrollbar { width: 2px; }
+  .events-list::-webkit-scrollbar-track { background: transparent; }
+  .events-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .event-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+
+  .event-item:hover { border-color: var(--amber-dim); background: var(--amber-faint); }
+
+  .event-time {
+    font-size: 10px;
+    color: var(--amber);
+    font-variant-numeric: tabular-nums;
+    min-width: 38px;
+  }
+
+  .event-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  .event-dot.atendimento { background: var(--teal-light); }
+  .event-dot.entrega { background: var(--amber); }
+
+  .event-name {
+    flex: 1;
+    font-size: 10px;
+    color: var(--text);
+  }
+
+  .event-tag {
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 1px;
+  }
+
+  /* PANEL 5 — NOW PLAYING */
+  .panel-playing {
+    grid-column: 1;
+    grid-row: 3;
+    background: var(--surface);
+  }
+
+  .playing-track {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .album-art {
+    width: 48px; height: 48px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-faint);
+    font-size: 18px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .album-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(200,169,110,0.1));
+  }
+
+  .track-info {}
+  .track-name {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  .track-artist {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+  .track-year {
+    font-size: 8px;
+    color: var(--text-faint);
+    margin-top: 1px;
+  }
+
+  .progress-bar {
+    height: 1px;
+    background: var(--border);
+    border-radius: 1px;
+    margin: 10px 0 6px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 1px;
+    width: 35%;
+    transition: width 0.5s linear;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -3px; top: -3px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+
+  .progress-times {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    color: var(--text-faint);
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+
+  .ctrl-btn:hover { color: var(--amber); }
+
+  .ctrl-play {
+    width: 32px; height: 32px;
+    border: 1px solid var(--amber-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--amber);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .ctrl-play:hover { background: var(--amber-faint); }
+
+  .spotify-note {
+    font-size: 8px;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* PANEL 6 — FINANCEIRO */
+  .panel-financeiro {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .fin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .fin-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 2px;
+  }
+
+  .fin-label {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+
+  .fin-value {
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--amber);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .fin-value .prefix {
+    font-size: 10px;
+    color: var(--amber-dim);
+    margin-right: 2px;
+  }
+
+  .fin-sub {
+    font-size: 8px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+
+  .fin-meta {
+    font-size: 8px;
+    color: var(--text-faint);
+    text-align: right;
+  }
+
+  /* PANEL 7 — PROJETO ATIVO */
+  .panel-projeto {
+    grid-column: 3;
+    grid-row: 3;
+  }
+
+  .projeto-header {
+    margin-bottom: 14px;
+  }
+
+  .projeto-nome {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .projeto-prazo {
+    font-size: 8px;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .projeto-progress {
+    margin: 14px 0;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .progress-pct { color: var(--amber); }
+
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .progress-track-fill {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 1px;
+  }
+
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.15s;
+  }
+
+  .check-item:hover { color: var(--text); }
+
+  .check-box {
+    width: 12px; height: 12px;
+    border: 1px solid var(--border);
+    border-radius: 1px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .check-item.done .check-box {
+    background: var(--amber-faint);
+    border-color: var(--amber-dim);
+    color: var(--amber);
+  }
+
+  .check-item.done .check-text {
+    text-decoration: line-through;
+    color: var(--text-faint);
+  }
+
+  .meta-content {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 9px;
+  }
+
+  .meta-item:last-child { border-bottom: none; }
+
+  .meta-key { color: var(--text-faint); letter-spacing: 0.06em; }
+  .meta-val { color: var(--text); }
+
+  .meta-status {
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 1px;
+  }
+
+  .meta-status.pendente {
+    background: rgba(200,169,110,0.1);
+    color: var(--amber);
+    border: 1px solid var(--amber-dim);
+  }
+
+  .meta-status.publicado {
+    background: rgba(122,158,126,0.1);
+    color: var(--green);
+    border: 1px solid rgba(122,158,126,0.3);
+  }
+
+  /* NOTA CLÍNICA */
+  .panel-nota {
+    grid-column: 2 / 4;
+    grid-row: 4;
+    background: var(--surface);
+  }
+
+  .nota-area {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.7;
+    resize: none;
+    outline: none;
+    min-height: 80px;
+  }
+
+  .nota-area::placeholder {
+    color: var(--text-faint);
+  }
+
+  .nota-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nota-chars { font-size: 8px; color: var(--text-faint); }
+
+  .nota-save {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: none;
+    border: 1px solid var(--amber-dim);
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.15s;
+  }
+
+  .nota-save:hover { background: var(--amber-faint); }
+
+  /* Fade in */
+  .panel {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  .panel:nth-child(1) { animation-delay: 0.05s; }
+  .panel:nth-child(2) { animation-delay: 0.1s; }
+  .panel:nth-child(3) { animation-delay: 0.15s; }
+  .panel:nth-child(4) { animation-delay: 0.2s; }
+  .panel:nth-child(5) { animation-delay: 0.25s; }
+  .panel:nth-child(6) { animation-delay: 0.3s; }
+  .panel:nth-child(7) { animation-delay: 0.35s; }
+  .panel:nth-child(8) { animation-delay: 0.4s; }
+
+  /* Scrollbar global */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">PAULA OS</span>
+    <span class="topbar-version">// v1.0</span>
+  </div>
+  <div class="topbar-right">
+    <span><span class="dot-live"></span> ONLINE</span>
+    <span id="top-city">PATOS DE MINAS</span>
+    <span id="top-temp">—°C</span>
+    <span id="top-net">—</span>
+    <span id="top-date"></span>
+    <span id="top-time"></span>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="grid">
+
+  <!-- PANEL 1: OPERADOR -->
+  <div class="panel panel-operator">
+    <div class="panel-label"><span><span class="num">01 //</span> OPERADOR</span><span style="color:var(--green);font-size:8px;">● ONLINE</span></div>
+    <div>
+      <div class="avatar-ring">P</div>
+      <div class="op-name">Paula <em>Gonçalves</em></div>
+      <div class="op-role">Psicóloga Clínica · CRP 04/40971</div>
+      <div class="op-city">Patos de Minas, MG</div>
+    </div>
+    <div class="status-badges">
+      <div class="badge active-focus" id="badge-focus" onclick="toggleFocus()">
+        <span class="badge-dot"></span>
+        <span id="focus-label">FOCO PROFUNDO</span>
+      </div>
+      <div class="badge" id="badge-dnd" onclick="toggleDND()">
+        <span class="badge-dot"></span>
+        <span id="dnd-label">DND INATIVO</span>
+      </div>
+    </div>
+    <div class="tagline">"Escuto o que ainda não teve nome."</div>
+  </div>
+
+  <!-- PANEL 2: SESSÃO -->
+  <div class="panel panel-session">
+    <div class="panel-label"><span><span class="num">02 //</span> SESSÃO</span></div>
+    <div class="session-greeting" id="greeting">Bom <em>dia</em>, Paula.</div>
+    <div class="session-meta">
+      <div class="session-date" id="session-date"></div>
+      <div class="session-clock"><span id="clock-h">00</span>:<span id="clock-m">00</span><span class="seconds" id="clock-s">00</span></div>
+    </div>
+    <div class="session-frase">
+      <p id="frase-text">"A solidão não é ausência de pessoas. É ausência de sentido no encontro."</p>
+      <div class="frase-origem">Segundo Cérebro · Dicionário da Solidão</div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: VITAIS -->
+  <div class="panel panel-vitais">
+    <div class="panel-label"><span><span class="num">03 //</span> VITAIS</span><span style="color:var(--green);">LIVE</span></div>
+
+    <div class="vital-grid">
+      <div class="vital-card">
+        <div class="vital-label">Passos</div>
+        <div class="vital-value" id="steps-val">—<span class="unit">pas</span></div>
+        <div class="vital-sub">Meta: 8.000</div>
+        <div class="vital-bar"><div class="vital-bar-fill green" id="steps-bar" style="width:0%"></div></div>
+      </div>
+      <div class="vital-card">
+        <div class="vital-label">Freq. Cardíaca</div>
+        <div class="vital-value" id="hr-val">—<span class="unit">bpm</span></div>
+        <div class="vital-sub" id="hr-sub">—</div>
+      </div>
+      <div class="vital-card">
+        <div class="vital-label">Sono</div>
+        <div class="vital-value" id="sleep-val">—<span class="unit">h</span></div>
+        <div class="vital-sub">Meta: 7h</div>
+        <div class="vital-bar"><div class="vital-bar-fill teal" id="sleep-bar" style="width:0%"></div></div>
+      </div>
+      <div class="vital-card">
+        <div class="vital-label">HRV</div>
+        <div class="vital-value" id="hrv-val">—<span class="unit">ms</span></div>
+        <div class="vital-sub" id="hrv-sub">—</div>
+      </div>
+    </div>
+
+    <div class="vital-card" style="margin-top:0;">
+      <div class="vital-label" style="margin-bottom:10px;">Anéis</div>
+      <div class="rings">
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 52 52">
+            <circle class="ring-bg" cx="26" cy="26" r="22"/>
+            <circle class="ring-fill ring-amber" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="90" id="ring-move"/>
+          </svg>
+          <div class="ring-label">Mover</div>
+        </div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 52 52">
+            <circle class="ring-bg" cx="26" cy="26" r="22"/>
+            <circle class="ring-fill ring-green" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="55" id="ring-exercise"/>
+          </svg>
+          <div class="ring-label">Exercitar</div>
+        </div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 52 52">
+            <circle class="ring-bg" cx="26" cy="26" r="22"/>
+            <circle class="ring-fill ring-teal" cx="26" cy="22" r="22" stroke-dasharray="138.2" stroke-dashoffset="110" id="ring-stand"/>
+          </svg>
+          <div class="ring-label">Levantar</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="garmin-note">
+      ⌚ Garmin Forerunner 265<br>
+      Conecte via Garmin Connect para sincronizar dados em tempo real
+    </div>
+  </div>
+
+  <!-- PANEL 4: CALENDÁRIO -->
+  <div class="panel panel-calendar">
+    <div class="panel-label"><span><span class="num">04 //</span> CALENDÁRIO</span><span id="cal-month" style="color:var(--text-faint)"></span></div>
+    <div class="week-nav" id="week-nav"></div>
+    <div class="events-list" id="events-list"></div>
+  </div>
+
+  <!-- PANEL 5: NOW PLAYING -->
+  <div class="panel panel-playing">
+    <div class="panel-label"><span><span class="num">05 //</span> NOW PLAYING</span><span id="spotify-status" style="color:var(--text-faint);font-size:8px;">SPOTIFY</span></div>
+    <div class="playing-track">
+      <div class="album-art" id="album-art-wrap">
+        <img id="album-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:2px;display:none;">
+        <span id="album-placeholder">♪</span>
+      </div>
+      <div class="track-info">
+        <div class="track-name" id="track-name">—</div>
+        <div class="track-artist" id="track-artist">—</div>
+        <div class="track-year" id="track-year">—</div>
+      </div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-times">
+      <span id="prog-current">0:00</span>
+      <span id="prog-total">0:00</span>
+    </div>
+    <div class="player-controls">
+      <button class="ctrl-btn" onclick="spotifyPrev()">⏮</button>
+      <div class="ctrl-play" id="play-btn" onclick="spotifyToggle()">▶</div>
+      <button class="ctrl-btn" onclick="spotifyNext()">⏭</button>
+    </div>
+    <div style="margin-top:12px;">
+      <button id="spotify-connect-btn" onclick="spotifyLogin()"
+        style="width:100%;background:var(--amber-faint);border:1px solid var(--amber-dim);
+               color:var(--amber);font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;
+               text-transform:uppercase;padding:8px;cursor:pointer;border-radius:1px;transition:all 0.15s;">
+        ⬡ Conectar Spotify
+      </button>
+      <button id="spotify-disconnect-btn" onclick="spotifyLogout()"
+        style="width:100%;background:none;border:1px solid var(--border);display:none;
+               color:var(--text-faint);font-family:var(--font-mono);font-size:8px;letter-spacing:0.1em;
+               text-transform:uppercase;padding:6px;cursor:pointer;border-radius:1px;margin-top:4px;">
+        Desconectar
+      </button>
+    </div>
+  </div>
+
+  <!-- PANEL 6: FINANCEIRO -->
+  <div class="panel panel-financeiro">
+    <div class="panel-label"><span><span class="num">06 //</span> FINANCEIRO</span><span id="fin-week" style="color:var(--text-faint)"></span></div>
+    <div class="fin-grid">
+      <div class="fin-card">
+        <div class="fin-label">Semana</div>
+        <div class="fin-value"><span class="prefix">R$</span><span id="fin-semana">0</span></div>
+        <div class="fin-sub" id="fin-semana-sub">0 sessões × R$275</div>
+      </div>
+      <div class="fin-card">
+        <div class="fin-label">Mês estimado</div>
+        <div class="fin-value"><span class="prefix">R$</span><span id="fin-mes">0</span></div>
+        <div class="fin-sub">projeção × 4</div>
+      </div>
+      <div class="fin-card">
+        <div class="fin-label">Sessões hoje</div>
+        <div class="fin-value"><span id="fin-hoje">3</span></div>
+        <div class="fin-sub"><span class="prefix">R$</span><span id="fin-hoje-val">825</span> realizadas</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div class="panel-label" style="margin-bottom:0;"><span class="num">↳</span> Sessões na semana</div>
+      <input type="number" id="sessoes-input" min="0" max="40" value="5"
+        style="width:40px;background:var(--surface2);border:1px solid var(--border);color:var(--amber);
+               font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;"
+        oninput="calcFinanceiro()">
+    </div>
+    <div class="fin-meta" id="fin-meta">média R$275/sessão</div>
+  </div>
+
+  <!-- PANEL 7: PROJETO ATIVO + META CONTEÚDO -->
+  <div class="panel panel-projeto">
+    <div class="panel-label"><span><span class="num">07 //</span> PROJETO ATIVO</span></div>
+    <div class="projeto-header">
+      <div class="projeto-nome">Dicionário<br><em style="font-style:italic;color:var(--amber);">da Solidão</em></div>
+      <div class="projeto-prazo">Prazo · Maio 2026</div>
+    </div>
+    <div class="projeto-progress">
+      <div class="progress-label">
+        <span>Progresso</span>
+        <span class="progress-pct">40%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-track-fill" style="width:40%"></div>
+      </div>
+    </div>
+    <div class="checklist">
+      <div class="check-item done" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <span class="check-text">Verbete "so.li.dão" publicado</span>
+      </div>
+      <div class="check-item done" onclick="toggleCheck(this)">
+        <div class="check-box">✓</div>
+        <span class="check-text">Funil Instagram → YouTube mapeado</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <span class="check-text">Aula YouTube — leitura comentada</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <span class="check-text">Segundo verbete definido</span>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <span class="check-text">WhatsApp outreach Casos Clínicos</span>
+      </div>
+    </div>
+
+    <div class="meta-content">
+      <div class="panel-label" style="margin-bottom:10px;"><span class="num">↳</span> META DE CONTEÚDO</div>
+      <div class="meta-item">
+        <span class="meta-key">Post semana</span>
+        <span class="meta-status pendente">pendente</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-key">Story noturno</span>
+        <span class="meta-status publicado">publicado</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-key">YouTube Solidão</span>
+        <span class="meta-status pendente">pendente</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 8: NOTA CLÍNICA -->
+  <div class="panel panel-nota" style="grid-column:1/4;grid-row:4;">
+    <div class="panel-label"><span><span class="num">08 //</span> NOTA DO DIA</span><span id="nota-saved" style="color:var(--green);font-size:8px;display:none;">● salvo</span></div>
+    <textarea class="nota-area" id="nota-area" placeholder="O que ficou da escuta de hoje..."></textarea>
+    <div class="nota-footer">
+      <span class="nota-chars"><span id="nota-count">0</span> caracteres</span>
+      <button class="nota-save" onclick="saveNota()">Salvar nota</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // RELÓGIO E DATA
+  const FRASES = [
+    { text: "A solidão não é ausência de pessoas. É ausência de sentido no encontro.", origem: "Dicionário da Solidão" },
+    { text: "O que não entra no prontuário muitas vezes é o que mais importa.", origem: "Notas Clínicas" },
+    { text: "Escuto o que ainda não teve nome.", origem: "Paula Gonçalves" },
+    { text: "O luto não é uma doença. É o preço do amor.", origem: "Casa do Luto" },
+    { text: "O burnout não é fraqueza. É o custo de um sistema que pede demais.", origem: "Temporada Burnout" },
+  ];
+
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+
+    document.getElementById('clock-h').textContent = h;
+    document.getElementById('clock-m').textContent = m;
+    document.getElementById('clock-s').textContent = s;
+    document.getElementById('top-time').textContent = `${h}:${m}`;
+
+    const hour = now.getHours();
+    let period = 'dia';
+    if (hour >= 12 && hour < 18) period = 'tarde';
+    else if (hour >= 18) period = 'noite';
+    document.getElementById('greeting').innerHTML = `Boa <em>${period}</em>, Paula.`;
+
+    const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const dayOfYear = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000);
+    document.getElementById('session-date').textContent =
+      `${dias[now.getDay()]} · ${now.getDate()} de ${meses[now.getMonth()]} de ${now.getFullYear()} · Dia ${dayOfYear} de 365`;
+    document.getElementById('top-date').textContent =
+      `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()}`;
+    document.getElementById('cal-month').textContent = `${meses[now.getMonth()].toUpperCase()} ${now.getFullYear()}`;
+  }
+
+  // AGENDA — edite aqui toda semana
+  const AGENDA = [
+    { date: '2026-04-22', time: '13:00', name: 'João Vitor',         type: 'atendimento' },
+    { date: '2026-04-23', time: '13:30', name: 'Arthur Seara Ulhoa', type: 'atendimento' },
+    { date: '2026-04-23', time: '14:30', name: 'Camila Ulhoa',       type: 'atendimento' },
+    { date: '2026-04-24', time: '09:00', name: 'Tarciso',            type: 'atendimento' },
+    { date: '2026-04-24', time: '11:30', name: 'Laura Alves Araújo', type: 'atendimento' },
+  ];
+
+  let selectedDate = new Date().toISOString().slice(0,10);
+
+  function renderEvents(dateStr) {
+    const list = document.getElementById('events-list');
+    const items = AGENDA.filter(e => e.date === dateStr);
+    if (items.length === 0) {
+      list.innerHTML = `<div style="padding:16px;color:var(--text-faint);font-size:10px;text-align:center;letter-spacing:0.08em;">Nenhum atendimento</div>`;
+      return;
+    }
+    list.innerHTML = items.map(e => `
+      <div class="event-item">
+        <span class="event-time">${e.time}</span>
+        <span class="event-dot ${e.type}"></span>
+        <span class="event-name">${e.name}</span>
+        <span class="event-tag">${e.type === 'atendimento' ? 'Atendimento' : 'Entrega'}</span>
+      </div>
+    `).join('');
+  }
+
+  // SEMANA
+  function buildWeek() {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const nav = document.getElementById('week-nav');
+    const nomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    nav.innerHTML = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - dayOfWeek + i);
+      const dateStr = d.toISOString().slice(0,10);
+      const hasEvent = AGENDA.some(e => e.date === dateStr);
+      const div = document.createElement('div');
+      div.className = 'week-day' + (i === dayOfWeek ? ' today' : '');
+      div.innerHTML = `
+        <div class="week-day-name">${nomes[i]}</div>
+        <div class="week-day-num">${d.getDate()}</div>
+        ${hasEvent ? '<div style="width:4px;height:4px;border-radius:50%;background:var(--teal-light);margin:3px auto 0;"></div>' : '<div style="height:7px;"></div>'}
+      `;
+      div.addEventListener('click', () => {
+        document.querySelectorAll('.week-day').forEach(el => el.classList.remove('today'));
+        div.classList.add('today');
+        selectedDate = dateStr;
+        renderEvents(dateStr);
+      });
+      nav.appendChild(div);
+    }
+    renderEvents(selectedDate);
+  }
+
+  // FRASE ROTATIVA
+  function updateFrase() {
+    const idx = Math.floor(Math.random() * FRASES.length);
+    document.getElementById('frase-text').textContent = `"${FRASES[idx].text}"`;
+    document.querySelector('.frase-origem').textContent = `Segundo Cérebro · ${FRASES[idx].origem}`;
+  }
+
+  // FINANCEIRO
+  function calcFinanceiro() {
+    const sessoes = parseInt(document.getElementById('sessoes-input').value) || 0;
+    const media = 275;
+    const semana = sessoes * media;
+    const mes = semana * 4;
+    document.getElementById('fin-semana').textContent = semana.toLocaleString('pt-BR');
+    document.getElementById('fin-semana-sub').textContent = `${sessoes} sessões × R$${media}`;
+    document.getElementById('fin-mes').textContent = mes.toLocaleString('pt-BR');
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    document.getElementById('fin-week').textContent =
+      `${startOfWeek.getDate()}–${endOfWeek.getDate()}/${endOfWeek.getMonth()+1}`;
+  }
+
+  // BADGES
+  let focusActive = true, dndActive = false;
+
+  function toggleFocus() {
+    focusActive = !focusActive;
+    const b = document.getElementById('badge-focus');
+    const l = document.getElementById('focus-label');
+    if (focusActive) { b.classList.add('active-focus'); l.textContent = 'FOCO PROFUNDO'; }
+    else { b.classList.remove('active-focus'); l.textContent = 'FOCO LIVRE'; }
+  }
+
+  function toggleDND() {
+    dndActive = !dndActive;
+    const b = document.getElementById('badge-dnd');
+    const l = document.getElementById('dnd-label');
+    if (dndActive) { b.classList.add('active-dnd'); l.textContent = 'DND ATIVO'; }
+    else { b.classList.remove('active-dnd'); l.textContent = 'DND INATIVO'; }
+  }
+
+  // CHECKLIST
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    if (el.classList.contains('done')) el.querySelector('.check-box').textContent = '✓';
+    else el.querySelector('.check-box').textContent = '';
+  }
+
+  // NOTA
+  document.getElementById('nota-area').addEventListener('input', function() {
+    document.getElementById('nota-count').textContent = this.value.length;
+    document.getElementById('nota-saved').style.display = 'none';
+  });
+
+  function saveNota() {
+    const nota = document.getElementById('nota-area').value;
+    localStorage.setItem('paula-os-nota', nota);
+    const saved = document.getElementById('nota-saved');
+    saved.style.display = 'inline';
+    setTimeout(() => saved.style.display = 'none', 2000);
+  }
+
+  // Carregar nota salva
+  const saved = localStorage.getItem('paula-os-nota');
+  if (saved) {
+    document.getElementById('nota-area').value = saved;
+    document.getElementById('nota-count').textContent = saved.length;
+  }
+
+  // ─── SPOTIFY (PKCE) ────────────────────────────────────────
+  const SPOTIFY_CLIENT_ID = '7155a0fd114240228ee286b3c072ea96';
+  const SPOTIFY_REDIRECT  = 'http://127.0.0.1:8888/callback';
+  const SPOTIFY_SCOPES    = 'user-read-currently-playing user-read-playback-state user-modify-playback-state';
+
+  // PKCE helpers
+  function base64url(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)))
+      .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  async function pkceChallenge() {
+    const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
+    const digest   = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+    return { verifier, challenge: base64url(digest) };
+  }
+
+  async function spotifyLogin() {
+    const { verifier, challenge } = await pkceChallenge();
+    localStorage.setItem('spotify_verifier', verifier);
+    const params = new URLSearchParams({
+      client_id:             SPOTIFY_CLIENT_ID,
+      response_type:         'code',
+      redirect_uri:          SPOTIFY_REDIRECT,
+      scope:                 SPOTIFY_SCOPES,
+      code_challenge_method: 'S256',
+      code_challenge:        challenge,
+    });
+    window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
+  }
+
+  async function exchangeCode(code) {
+    const verifier = localStorage.getItem('spotify_verifier');
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type:    'authorization_code',
+        code,
+        redirect_uri:  SPOTIFY_REDIRECT,
+        client_id:     SPOTIFY_CLIENT_ID,
+        code_verifier: verifier,
+      }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      localStorage.setItem('spotify_token',         data.access_token);
+      localStorage.setItem('spotify_refresh_token', data.refresh_token || '');
+      localStorage.setItem('spotify_expiry',        String(Date.now() + (data.expires_in || 3600) * 1000));
+      localStorage.removeItem('spotify_verifier');
+      return data.access_token;
+    }
+    return null;
+  }
+
+  async function refreshToken() {
+    const refresh = localStorage.getItem('spotify_refresh_token');
+    if (!refresh) return null;
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type:    'refresh_token',
+        refresh_token: refresh,
+        client_id:     SPOTIFY_CLIENT_ID,
+      }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      localStorage.setItem('spotify_token',  data.access_token);
+      localStorage.setItem('spotify_expiry', String(Date.now() + (data.expires_in || 3600) * 1000));
+      return data.access_token;
+    }
+    return null;
+  }
+
+  async function getToken() {
+    const token  = localStorage.getItem('spotify_token');
+    const expiry = parseInt(localStorage.getItem('spotify_expiry') || '0');
+    if (token && Date.now() < expiry - 60000) return token;
+    return await refreshToken();
+  }
+
+  function spotifyLogout() {
+    ['spotify_token','spotify_refresh_token','spotify_expiry','spotify_verifier']
+      .forEach(k => localStorage.removeItem(k));
+    updateSpotifyUI(false);
+    document.getElementById('track-name').textContent   = '—';
+    document.getElementById('track-artist').textContent = '—';
+    document.getElementById('track-year').textContent   = '—';
+    document.getElementById('progress-fill').style.width = '0%';
+  }
+
+  function updateSpotifyUI(connected) {
+    document.getElementById('spotify-connect-btn').style.display    = connected ? 'none'  : 'block';
+    document.getElementById('spotify-disconnect-btn').style.display = connected ? 'block' : 'none';
+    document.getElementById('spotify-status').style.color   = connected ? 'var(--green)' : 'var(--text-faint)';
+    document.getElementById('spotify-status').textContent   = connected ? '● SPOTIFY' : 'SPOTIFY';
+  }
+
+  function msToTime(ms) {
+    const s = Math.floor(ms / 1000);
+    return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  }
+
+  async function fetchNowPlaying() {
+    const token = await getToken();
+    if (!token) return;
+    try {
+      const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.status === 204 || res.status === 401) { updateSpotifyUI(!!token); return; }
+      const data = await res.json();
+      if (!data || !data.item) return;
+
+      const track   = data.item;
+      const artists = track.artists.map(a => a.name).join(', ');
+      const album   = track.album;
+      const year    = album.release_date ? album.release_date.slice(0,4) : '';
+      const imgUrl  = album.images?.[0]?.url || '';
+      const pct     = Math.round((data.progress_ms / track.duration_ms) * 100);
+
+      document.getElementById('track-name').textContent    = track.name;
+      document.getElementById('track-artist').textContent  = artists;
+      document.getElementById('track-year').textContent    = `${album.name} · ${year}`;
+      document.getElementById('prog-current').textContent  = msToTime(data.progress_ms);
+      document.getElementById('prog-total').textContent    = msToTime(track.duration_ms);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('play-btn').textContent      = data.is_playing ? '⏸' : '▶';
+
+      const img = document.getElementById('album-img');
+      const ph  = document.getElementById('album-placeholder');
+      if (imgUrl) { img.src = imgUrl; img.style.display = 'block'; ph.style.display = 'none'; }
+      else        { img.style.display = 'none'; ph.style.display = 'block'; }
+
+      updateSpotifyUI(true);
+    } catch(e) { console.warn('Spotify error', e); }
+  }
+
+  async function spotifyToggle() {
+    const token = await getToken(); if (!token) { spotifyLogin(); return; }
+    const isPlaying = document.getElementById('play-btn').textContent === '⏸';
+    await fetch(`https://api.spotify.com/v1/me/player/${isPlaying ? 'pause' : 'play'}`, {
+      method: 'PUT', headers: { Authorization: `Bearer ${token}` }
+    });
+    setTimeout(fetchNowPlaying, 300);
+  }
+
+  async function spotifyNext() {
+    const token = await getToken(); if (!token) return;
+    await fetch('https://api.spotify.com/v1/me/player/next', {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }
+    });
+    setTimeout(fetchNowPlaying, 500);
+  }
+
+  async function spotifyPrev() {
+    const token = await getToken(); if (!token) return;
+    await fetch('https://api.spotify.com/v1/me/player/previous', {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }
+    });
+    setTimeout(fetchNowPlaying, 500);
+  }
+
+  // Capturar code após redirect OAuth PKCE
+  (async function handleOAuthCallback() {
+    const params = new URLSearchParams(window.location.search);
+    const code   = params.get('code');
+    if (code) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      const token = await exchangeCode(code);
+      if (token) {
+        updateSpotifyUI(true);
+        fetchNowPlaying();
+        setInterval(fetchNowPlaying, 5000);
+      }
+    } else if (localStorage.getItem('spotify_token')) {
+      updateSpotifyUI(true);
+      fetchNowPlaying();
+      setInterval(fetchNowPlaying, 5000);
+    }
+  })();
+  // ────────────────────────────────────────────────────────────
+
+  // GARMIN — atualize aqui manualmente
+  const GARMIN = {
+    passos:    2698,
+    metaPassos: 3140, // 86% = 2698, então meta ≈ 3140
+    fc_min:    54,
+    fc_max:    142,
+    sono:      0,     // atualize quando tiver
+    hrv:       35,
+    bodyBattery: 54,
+    estresse:  23,
+  };
+
+  function renderGarmin() {
+    const g = GARMIN;
+    // Passos
+    document.getElementById('steps-val').innerHTML = `${g.passos.toLocaleString('pt-BR')}<span class="unit">pas</span>`;
+    document.querySelector('#steps-val').closest('.vital-card').querySelector('.vital-sub').textContent = `Meta: ${g.metaPassos.toLocaleString('pt-BR')}`;
+    const pctPassos = Math.min(100, Math.round((g.passos / g.metaPassos) * 100));
+    document.getElementById('steps-bar').style.width = pctPassos + '%';
+    // FC
+    document.getElementById('hr-val').innerHTML = `${g.fc_min}<span class="unit">bpm</span>`;
+    document.getElementById('hr-sub').textContent = `Máx hoje: ${g.fc_max} bpm`;
+    // Sono
+    if (g.sono > 0) {
+      document.getElementById('sleep-val').innerHTML = `${g.sono}<span class="unit">h</span>`;
+      document.getElementById('sleep-bar').style.width = Math.min(100, (g.sono / 7) * 100) + '%';
+    }
+    // HRV
+    document.getElementById('hrv-val').innerHTML = `${g.hrv}<span class="unit">ms</span>`;
+    document.getElementById('hrv-sub').textContent = `Body Battery: ${g.bodyBattery}%`;
+    // Anéis — baseado em dados reais
+    const circum = 138.2;
+    const moveOff  = circum - (circum * Math.min(1, g.passos / g.metaPassos));
+    const exOff    = circum - (circum * (g.fc_max > 120 ? 0.7 : 0.3));
+    const standOff = circum - (circum * (g.estresse < 30 ? 0.8 : 0.4));
+    document.getElementById('ring-move').setAttribute('stroke-dashoffset', moveOff.toFixed(1));
+    document.getElementById('ring-exercise').setAttribute('stroke-dashoffset', exOff.toFixed(1));
+    document.getElementById('ring-stand').setAttribute('stroke-dashoffset', standOff.toFixed(1));
+    // Nota Garmin
+    document.querySelector('.garmin-note').innerHTML = `⌚ Garmin Forerunner 265 · Atualizado manualmente<br>Body Battery ${g.bodyBattery}% · Estresse ${g.estresse} · HRV ${g.hrv}ms`;
+  }
+
+  // SESSÕES HOJE — conta apenas atendimentos do dia atual
+  function calcSessoesHoje() {
+    const hoje = new Date().toISOString().slice(0,10);
+    const sessoesHoje = AGENDA.filter(e => e.date === hoje && e.type === 'atendimento').length;
+    document.getElementById('fin-hoje').textContent = sessoesHoje;
+    document.getElementById('fin-hoje-val').textContent = (sessoesHoje * 275).toLocaleString('pt-BR');
+  }
+
+  // INIT
+  updateClock();
+  setInterval(updateClock, 1000);
+  buildWeek();
+  calcFinanceiro();
+  calcSessoesHoje();
+  renderGarmin();
+
+  // Frase muda a cada 30min
+  setInterval(updateFrase, 1800000);
+</script>
+</body>
+</html>
