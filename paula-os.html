@@ -832,6 +832,193 @@
     background: var(--surface);
   }
 
+  /* CONFIG MODAL */
+  .config-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .config-overlay.open { display: block; }
+
+  .config-modal {
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .config-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .config-title {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  .config-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 24px; height: 24px;
+    cursor: pointer;
+    border-radius: 1px;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .config-close:hover { border-color: var(--amber-dim); color: var(--amber); }
+
+  .config-section {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .config-section-title {
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber-dim);
+    margin-bottom: 14px;
+  }
+
+  .config-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .config-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .config-field label {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .config-field input, .config-field select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 8px;
+    border-radius: 1px;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  .config-field input:focus, .config-field select:focus {
+    border-color: var(--amber-dim);
+  }
+
+  .config-agenda {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .config-agenda-row {
+    display: grid;
+    grid-template-columns: 110px 60px 1fr auto;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .config-remove {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    width: 22px; height: 22px;
+    cursor: pointer;
+    border-radius: 1px;
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .config-remove:hover { border-color: var(--red); color: var(--red); }
+
+  .config-add {
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 1px;
+    width: 100%;
+    margin-top: 4px;
+    transition: all 0.15s;
+  }
+
+  .config-add:hover { border-color: var(--amber-dim); color: var(--amber); }
+
+  .config-footer {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    background: var(--bg);
+  }
+
+  .config-save {
+    background: var(--amber-faint);
+    border: 1px solid var(--amber-dim);
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.15s;
+  }
+
+  .config-save:hover { background: rgba(200,169,110,0.15); }
+
+  .config-cancel {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.15s;
+  }
+
+  .config-cancel:hover { border-color: var(--text-dim); }
+
   .nota-area {
     width: 100%;
     background: none;
@@ -916,6 +1103,13 @@
     <span id="top-net">—</span>
     <span id="top-date"></span>
     <span id="top-time"></span>
+    <button onclick="openConfig()" style="background:none;border:1px solid var(--border);color:var(--text-faint);
+      font-family:var(--font-mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;
+      padding:3px 8px;cursor:pointer;border-radius:1px;transition:all 0.15s;"
+      onmouseover="this.style.borderColor='var(--amber-dim)';this.style.color='var(--amber)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-faint)'">
+      ⚙ Config
+    </button>
   </div>
 </div>
 
@@ -1238,6 +1432,114 @@
 
 </div>
 
+<!-- CONFIG MODAL -->
+<div class="config-overlay" id="config-overlay" onclick="if(event.target===this)closeConfig()">
+  <div class="config-modal">
+    <div class="config-header">
+      <span class="config-title">⚙ Configurações · Paula OS</span>
+      <button class="config-close" onclick="closeConfig()">✕</button>
+    </div>
+
+    <!-- GARMIN -->
+    <div class="config-section">
+      <div class="config-section-title">⌚ Garmin Forerunner 265</div>
+      <div class="config-row">
+        <div class="config-field">
+          <label>Passos hoje</label>
+          <input type="number" id="cfg-passos" placeholder="2698">
+        </div>
+        <div class="config-field">
+          <label>Meta de passos</label>
+          <input type="number" id="cfg-meta-passos" placeholder="3140">
+        </div>
+      </div>
+      <div class="config-row">
+        <div class="config-field">
+          <label>FC mínima (bpm)</label>
+          <input type="number" id="cfg-fc-min" placeholder="54">
+        </div>
+        <div class="config-field">
+          <label>FC máxima (bpm)</label>
+          <input type="number" id="cfg-fc-max" placeholder="142">
+        </div>
+      </div>
+      <div class="config-row">
+        <div class="config-field">
+          <label>Sono (horas)</label>
+          <input type="number" id="cfg-sono" placeholder="7" step="0.1">
+        </div>
+        <div class="config-field">
+          <label>HRV (ms)</label>
+          <input type="number" id="cfg-hrv" placeholder="35">
+        </div>
+      </div>
+      <div class="config-row">
+        <div class="config-field">
+          <label>Body Battery (%)</label>
+          <input type="number" id="cfg-bb" placeholder="54" min="0" max="100">
+        </div>
+        <div class="config-field">
+          <label>Estresse (0–100)</label>
+          <input type="number" id="cfg-estresse" placeholder="23" min="0" max="100">
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div class="config-section">
+      <div class="config-section-title">📅 Agenda da Semana</div>
+      <div class="config-agenda" id="cfg-agenda"></div>
+      <button class="config-add" onclick="addAgendaRow()">+ Adicionar atendimento</button>
+    </div>
+
+    <!-- PROJETO -->
+    <div class="config-section">
+      <div class="config-section-title">◎ Projeto Ativo</div>
+      <div class="config-row">
+        <div class="config-field">
+          <label>Nome do projeto</label>
+          <input type="text" id="cfg-projeto-nome" placeholder="Dicionário da Solidão">
+        </div>
+        <div class="config-field">
+          <label>Prazo</label>
+          <input type="text" id="cfg-projeto-prazo" placeholder="Maio 2026">
+        </div>
+      </div>
+      <div class="config-row">
+        <div class="config-field">
+          <label>Progresso (%)</label>
+          <input type="number" id="cfg-projeto-pct" placeholder="40" min="0" max="100">
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <div class="config-section-title" style="margin-bottom:8px;">Tarefas</div>
+        <div id="cfg-tarefas"></div>
+        <button class="config-add" onclick="addTarefaRow()">+ Adicionar tarefa</button>
+      </div>
+    </div>
+
+    <!-- FINANCEIRO -->
+    <div class="config-section">
+      <div class="config-section-title">$ Financeiro</div>
+      <div class="config-row">
+        <div class="config-field">
+          <label>Sessões na semana</label>
+          <input type="number" id="cfg-sessoes" placeholder="5">
+        </div>
+        <div class="config-field">
+          <label>Acumulado trimestre (R$)</label>
+          <input type="number" id="cfg-trimestre" placeholder="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="config-footer">
+      <button class="config-cancel" onclick="closeConfig()">Cancelar</button>
+      <button class="config-save" onclick="saveConfig()">✓ Salvar tudo</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // RELÓGIO E DATA
   const FRASES = [
@@ -1526,7 +1828,185 @@ Gerado por Paula OS`;
     document.getElementById('nota-count').textContent = saved.length;
   }
 
-  // ─── ESCUTA ────────────────────────────────────────────────
+  // ─── CONFIG PANEL ──────────────────────────────────────────
+  function openConfig() {
+    // Preencher campos com valores atuais
+    document.getElementById('cfg-passos').value      = GARMIN.passos;
+    document.getElementById('cfg-meta-passos').value = GARMIN.metaPassos;
+    document.getElementById('cfg-fc-min').value      = GARMIN.fc_min;
+    document.getElementById('cfg-fc-max').value      = GARMIN.fc_max;
+    document.getElementById('cfg-sono').value        = GARMIN.sono;
+    document.getElementById('cfg-hrv').value         = GARMIN.hrv;
+    document.getElementById('cfg-bb').value          = GARMIN.bodyBattery;
+    document.getElementById('cfg-estresse').value    = GARMIN.estresse;
+    document.getElementById('cfg-sessoes').value     = document.getElementById('sessoes-input').value;
+    document.getElementById('cfg-trimestre').value   = document.getElementById('trim-input').value;
+
+    const pNome = document.querySelector('.projeto-nome');
+    if (pNome) document.getElementById('cfg-projeto-nome').value = pNome.textContent.replace('\n','').trim();
+    document.getElementById('cfg-projeto-prazo').value = document.querySelector('.projeto-prazo')?.textContent.replace('Prazo · ','') || '';
+    const pctEl = document.querySelector('.progress-pct');
+    if (pctEl) document.getElementById('cfg-projeto-pct').value = parseInt(pctEl.textContent) || 40;
+
+    renderAgendaRows();
+    renderTarefaRows();
+    document.getElementById('config-overlay').classList.add('open');
+  }
+
+  function closeConfig() {
+    document.getElementById('config-overlay').classList.remove('open');
+  }
+
+  function renderAgendaRows() {
+    const el = document.getElementById('cfg-agenda');
+    el.innerHTML = AGENDA.map((a, i) => `
+      <div class="config-agenda-row" id="agenda-row-${i}">
+        <input type="date" value="${a.date}" id="ag-date-${i}"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                 font-family:var(--font-mono);font-size:10px;padding:4px 6px;border-radius:1px;width:100%;">
+        <input type="time" value="${a.time}" id="ag-time-${i}"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                 font-family:var(--font-mono);font-size:10px;padding:4px 6px;border-radius:1px;width:100%;">
+        <input type="text" value="${a.name}" id="ag-name-${i}" placeholder="Nome do paciente"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                 font-family:var(--font-mono);font-size:10px;padding:4px 6px;border-radius:1px;width:100%;">
+        <button class="config-remove" onclick="removeAgendaRow(${i})">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function addAgendaRow() {
+    const today = new Date().toISOString().slice(0,10);
+    AGENDA.push({ date: today, time: '09:00', name: '', type: 'atendimento' });
+    renderAgendaRows();
+  }
+
+  function removeAgendaRow(i) {
+    AGENDA.splice(i, 1);
+    renderAgendaRows();
+  }
+
+  function renderTarefaRows() {
+    const items = [...document.querySelectorAll('.check-item')];
+    const el = document.getElementById('cfg-tarefas');
+    el.innerHTML = items.map((item, i) => {
+      const done = item.classList.contains('done');
+      const text = item.querySelector('.check-text')?.textContent || '';
+      return `
+        <div style="display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;margin-bottom:6px;">
+          <input type="checkbox" id="tf-done-${i}" ${done ? 'checked' : ''}
+            style="accent-color:var(--amber);width:14px;height:14px;cursor:pointer;">
+          <input type="text" id="tf-text-${i}" value="${text}"
+            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                   font-family:var(--font-mono);font-size:10px;padding:4px 6px;border-radius:1px;width:100%;">
+          <button class="config-remove" onclick="removeTarefaRow(${i})">✕</button>
+        </div>`;
+    }).join('');
+  }
+
+  function addTarefaRow() {
+    const el = document.getElementById('cfg-tarefas');
+    const i = el.children.length;
+    const div = document.createElement('div');
+    div.style.cssText = 'display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;margin-bottom:6px;';
+    div.innerHTML = `
+      <input type="checkbox" id="tf-done-${i}"
+        style="accent-color:var(--amber);width:14px;height:14px;cursor:pointer;">
+      <input type="text" id="tf-text-${i}" placeholder="Nova tarefa"
+        style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+               font-family:var(--font-mono);font-size:10px;padding:4px 6px;border-radius:1px;width:100%;">
+      <button class="config-remove" onclick="this.closest('div').remove()">✕</button>`;
+    el.appendChild(div);
+  }
+
+  function removeTarefaRow(i) {
+    renderTarefaRows();
+    document.getElementById(`tf-text-${i}`)?.closest('div')?.remove();
+  }
+
+  function saveConfig() {
+    // Garmin
+    GARMIN.passos      = parseInt(document.getElementById('cfg-passos').value) || 0;
+    GARMIN.metaPassos  = parseInt(document.getElementById('cfg-meta-passos').value) || 8000;
+    GARMIN.fc_min      = parseInt(document.getElementById('cfg-fc-min').value) || 0;
+    GARMIN.fc_max      = parseInt(document.getElementById('cfg-fc-max').value) || 0;
+    GARMIN.sono        = parseFloat(document.getElementById('cfg-sono').value) || 0;
+    GARMIN.hrv         = parseInt(document.getElementById('cfg-hrv').value) || 0;
+    GARMIN.bodyBattery = parseInt(document.getElementById('cfg-bb').value) || 0;
+    GARMIN.estresse    = parseInt(document.getElementById('cfg-estresse').value) || 0;
+    renderGarmin();
+
+    // Agenda
+    const rows = document.querySelectorAll('[id^="agenda-row-"]');
+    AGENDA.length = 0;
+    rows.forEach((_, i) => {
+      const date = document.getElementById(`ag-date-${i}`)?.value;
+      const time = document.getElementById(`ag-time-${i}`)?.value;
+      const name = document.getElementById(`ag-name-${i}`)?.value;
+      if (date && name) AGENDA.push({ date, time, name, type: 'atendimento' });
+    });
+    buildWeek();
+    calcSessoesHoje();
+
+    // Tarefas
+    const tarefaEls = document.querySelectorAll('#cfg-tarefas > div');
+    const checklist = document.querySelector('.checklist');
+    if (checklist) {
+      checklist.innerHTML = '';
+      tarefaEls.forEach((_, i) => {
+        const done  = document.getElementById(`tf-done-${i}`)?.checked;
+        const text  = document.getElementById(`tf-text-${i}`)?.value || '';
+        if (!text) return;
+        const div = document.createElement('div');
+        div.className = `check-item${done ? ' done' : ''}`;
+        div.setAttribute('onclick', 'toggleCheck(this)');
+        div.innerHTML = `<div class="check-box">${done ? '✓' : ''}</div><span class="check-text">${text}</span>`;
+        checklist.appendChild(div);
+      });
+    }
+
+    // Progresso projeto
+    const pct = parseInt(document.getElementById('cfg-projeto-pct').value) || 0;
+    const pctEl = document.querySelector('.progress-pct');
+    const fillEl = document.querySelector('.progress-track-fill');
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (fillEl) fillEl.style.width = pct + '%';
+
+    // Financeiro
+    document.getElementById('sessoes-input').value = document.getElementById('cfg-sessoes').value;
+    document.getElementById('trim-input').value    = document.getElementById('cfg-trimestre').value;
+    calcFinanceiro();
+    calcTrimestre();
+
+    // Salvar no localStorage
+    localStorage.setItem('paula-os-config', JSON.stringify({
+      garmin: GARMIN,
+      agenda: AGENDA,
+      sessoes: document.getElementById('sessoes-input').value,
+      trimestre: document.getElementById('trim-input').value,
+      projetoPct: pct,
+    }));
+
+    closeConfig();
+
+    // Feedback visual
+    const btn = document.querySelector('.config-save');
+    if (btn) { btn.textContent = '✓ Salvo!'; setTimeout(() => btn.textContent = '✓ Salvar tudo', 1500); }
+  }
+
+  // Restaurar config salva
+  (function restoreConfig() {
+    const saved = localStorage.getItem('paula-os-config');
+    if (!saved) return;
+    try {
+      const c = JSON.parse(saved);
+      if (c.garmin) Object.assign(GARMIN, c.garmin);
+      if (c.agenda) { AGENDA.length = 0; AGENDA.push(...c.agenda.map(a => ({...a, date: a.date}))); }
+      if (c.sessoes) document.getElementById('sessoes-input').value = c.sessoes;
+      if (c.trimestre) document.getElementById('trim-input').value = c.trimestre;
+    } catch(e) {}
+  })();
+  // ────────────────────────────────────────────────────────────
   const ESCUTA_FEEDS = {
     mentalhealth: [
       { url: 'https://www.psychologytoday.com/us/front/feed', name: 'Psychology Today' },
