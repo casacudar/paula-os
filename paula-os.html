@@ -1497,15 +1497,19 @@
       <div class="config-section-title">◎ Projeto Ativo</div>
       <div class="config-row">
         <div class="config-field">
-          <label>Nome do projeto</label>
-          <input type="text" id="cfg-projeto-nome" placeholder="Dicionário da Solidão">
+          <label>Nome do projeto (linha 1)</label>
+          <input type="text" id="cfg-projeto-nome1" placeholder="Dicionário">
         </div>
+        <div class="config-field">
+          <label>Nome do projeto (linha 2 — itálico)</label>
+          <input type="text" id="cfg-projeto-nome2" placeholder="da Solidão">
+        </div>
+      </div>
+      <div class="config-row">
         <div class="config-field">
           <label>Prazo</label>
           <input type="text" id="cfg-projeto-prazo" placeholder="Maio 2026">
         </div>
-      </div>
-      <div class="config-row">
         <div class="config-field">
           <label>Progresso (%)</label>
           <input type="number" id="cfg-projeto-pct" placeholder="40" min="0" max="100">
@@ -1516,6 +1520,13 @@
         <div id="cfg-tarefas"></div>
         <button class="config-add" onclick="addTarefaRow()">+ Adicionar tarefa</button>
       </div>
+    </div>
+
+    <!-- META DE CONTEÚDO -->
+    <div class="config-section">
+      <div class="config-section-title">◈ Meta de Conteúdo</div>
+      <div id="cfg-meta-conteudo"></div>
+      <button class="config-add" onclick="addMetaRow()">+ Adicionar item</button>
     </div>
 
     <!-- FINANCEIRO -->
@@ -1830,7 +1841,6 @@ Gerado por Paula OS`;
 
   // ─── CONFIG PANEL ──────────────────────────────────────────
   function openConfig() {
-    // Preencher campos com valores atuais
     document.getElementById('cfg-passos').value      = GARMIN.passos;
     document.getElementById('cfg-meta-passos').value = GARMIN.metaPassos;
     document.getElementById('cfg-fc-min').value      = GARMIN.fc_min;
@@ -1842,14 +1852,21 @@ Gerado por Paula OS`;
     document.getElementById('cfg-sessoes').value     = document.getElementById('sessoes-input').value;
     document.getElementById('cfg-trimestre').value   = document.getElementById('trim-input').value;
 
+    // Projeto — nome em duas partes
     const pNome = document.querySelector('.projeto-nome');
-    if (pNome) document.getElementById('cfg-projeto-nome').value = pNome.textContent.replace('\n','').trim();
-    document.getElementById('cfg-projeto-prazo').value = document.querySelector('.projeto-prazo')?.textContent.replace('Prazo · ','') || '';
+    if (pNome) {
+      const parts = pNome.innerText.trim().split('\n').map(s => s.trim()).filter(Boolean);
+      document.getElementById('cfg-projeto-nome1').value = parts[0] || '';
+      document.getElementById('cfg-projeto-nome2').value = parts[1] || '';
+    }
+    document.getElementById('cfg-projeto-prazo').value =
+      document.querySelector('.projeto-prazo')?.textContent.replace('Prazo · ','') || '';
     const pctEl = document.querySelector('.progress-pct');
     if (pctEl) document.getElementById('cfg-projeto-pct').value = parseInt(pctEl.textContent) || 40;
 
     renderAgendaRows();
     renderTarefaRows();
+    renderMetaRows();
     document.getElementById('config-overlay').classList.add('open');
   }
 
@@ -1884,6 +1901,47 @@ Gerado por Paula OS`;
   function removeAgendaRow(i) {
     AGENDA.splice(i, 1);
     renderAgendaRows();
+  }
+
+  function renderMetaRows() {
+    const items = [...document.querySelectorAll('.meta-item')];
+    const el = document.getElementById('cfg-meta-conteudo');
+    el.innerHTML = items.map((item, i) => {
+      const key    = item.querySelector('.meta-key')?.textContent || '';
+      const status = item.querySelector('.meta-status')?.textContent.trim() || 'pendente';
+      return `
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;margin-bottom:6px;">
+          <input type="text" id="meta-key-${i}" value="${key}"
+            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                   font-family:var(--font-mono);font-size:10px;padding:4px 6px;border-radius:1px;width:100%;">
+          <select id="meta-status-${i}"
+            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                   font-family:var(--font-mono);font-size:9px;padding:4px 6px;border-radius:1px;cursor:pointer;">
+            <option value="pendente" ${status==='pendente'?'selected':''}>pendente</option>
+            <option value="publicado" ${status==='publicado'?'selected':''}>publicado</option>
+          </select>
+          <button class="config-remove" onclick="this.closest('div').remove()">✕</button>
+        </div>`;
+    }).join('');
+  }
+
+  function addMetaRow() {
+    const el = document.getElementById('cfg-meta-conteudo');
+    const i  = el.children.length;
+    const div = document.createElement('div');
+    div.style.cssText = 'display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;margin-bottom:6px;';
+    div.innerHTML = `
+      <input type="text" id="meta-key-${i}" placeholder="Nome do conteúdo"
+        style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+               font-family:var(--font-mono);font-size:10px;padding:4px 6px;border-radius:1px;width:100%;">
+      <select id="meta-status-${i}"
+        style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+               font-family:var(--font-mono);font-size:9px;padding:4px 6px;border-radius:1px;cursor:pointer;">
+        <option value="pendente">pendente</option>
+        <option value="publicado">publicado</option>
+      </select>
+      <button class="config-remove" onclick="this.closest('div').remove()">✕</button>`;
+    el.appendChild(div);
   }
 
   function renderTarefaRows() {
@@ -1965,12 +2023,39 @@ Gerado por Paula OS`;
       });
     }
 
+    // Projeto — nome
+    const nome1 = document.getElementById('cfg-projeto-nome1').value || 'Dicionário';
+    const nome2 = document.getElementById('cfg-projeto-nome2').value || 'da Solidão';
+    const prazo = document.getElementById('cfg-projeto-prazo').value || '';
+    const pNomeEl = document.querySelector('.projeto-nome');
+    if (pNomeEl) pNomeEl.innerHTML = `${nome1}<br><em style="font-style:italic;color:var(--amber)">${nome2}</em>`;
+    const pPrazoEl = document.querySelector('.projeto-prazo');
+    if (pPrazoEl) pPrazoEl.textContent = `Prazo · ${prazo}`;
+
     // Progresso projeto
     const pct = parseInt(document.getElementById('cfg-projeto-pct').value) || 0;
     const pctEl = document.querySelector('.progress-pct');
     const fillEl = document.querySelector('.progress-track-fill');
     if (pctEl) pctEl.textContent = pct + '%';
     if (fillEl) fillEl.style.width = pct + '%';
+
+    // Meta de conteúdo
+    const metaEls = document.querySelectorAll('#cfg-meta-conteudo > div');
+    const metaContent = document.querySelector('.meta-content');
+    if (metaContent) {
+      const label = metaContent.querySelector('.panel-label');
+      metaContent.innerHTML = '';
+      if (label) metaContent.appendChild(label);
+      metaEls.forEach((_, i) => {
+        const key    = document.getElementById(`meta-key-${i}`)?.value || '';
+        const status = document.getElementById(`meta-status-${i}`)?.value || 'pendente';
+        if (!key) return;
+        const div = document.createElement('div');
+        div.className = 'meta-item';
+        div.innerHTML = `<span class="meta-key">${key}</span><span class="meta-status ${status}">${status}</span>`;
+        metaContent.appendChild(div);
+      });
+    }
 
     // Financeiro
     document.getElementById('sessoes-input').value = document.getElementById('cfg-sessoes').value;
