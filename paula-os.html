@@ -1072,7 +1072,7 @@
   <!-- PANEL 6: FINANCEIRO -->
   <div class="panel panel-financeiro">
     <div class="panel-label"><span><span class="num">06 //</span> FINANCEIRO</span><span id="fin-week" style="color:var(--text-faint)"></span></div>
-    <div class="fin-grid">
+    <div class="fin-grid" style="grid-template-columns:repeat(5,1fr);">
       <div class="fin-card">
         <div class="fin-label">Semana</div>
         <div class="fin-value"><span class="prefix">R$</span><span id="fin-semana">0</span></div>
@@ -1085,19 +1085,55 @@
       </div>
       <div class="fin-card">
         <div class="fin-label">Sessões hoje</div>
-        <div class="fin-value"><span id="fin-hoje">3</span></div>
-        <div class="fin-sub"><span class="prefix">R$</span><span id="fin-hoje-val">825</span> realizadas</div>
+        <div class="fin-value"><span id="fin-hoje">1</span></div>
+        <div class="fin-sub"><span class="prefix">R$</span><span id="fin-hoje-val">275</span> realizadas</div>
+      </div>
+      <div class="fin-card">
+        <div class="fin-label">Casos Clínicos</div>
+        <div class="fin-value"><span class="prefix">R$</span><span id="fin-casos">0</span></div>
+        <div class="fin-sub"><span id="fin-casos-n">0</span> vendas · Hotmart</div>
+        <div style="display:flex;gap:4px;margin-top:6px;align-items:center;">
+          <button onclick="addVenda(-1)" style="background:none;border:1px solid var(--border);color:var(--text-faint);width:18px;height:18px;cursor:pointer;border-radius:1px;font-size:10px;display:flex;align-items:center;justify-content:center;">−</button>
+          <button onclick="addVenda(1)" style="background:none;border:1px solid var(--amber-dim);color:var(--amber);width:18px;height:18px;cursor:pointer;border-radius:1px;font-size:10px;display:flex;align-items:center;justify-content:center;">+</button>
+        </div>
+      </div>
+      <div class="fin-card">
+        <div class="fin-label">Total semana</div>
+        <div class="fin-value"><span class="prefix">R$</span><span id="fin-total">0</span></div>
+        <div class="fin-sub">sessões + casos</div>
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <!-- TERMÔMETRO TRIMESTRAL -->
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="panel-label" style="margin-bottom:0;"><span class="num">↳</span> META TRIMESTRAL · ABR–JUN</div>
+        <div style="font-size:9px;color:var(--amber);" id="term-pct">0%</div>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;position:relative;">
+        <div id="term-fill" style="height:100%;background:linear-gradient(90deg,var(--teal-light),var(--amber));border-radius:3px;width:0%;transition:width 1s ease;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;">
+        <div style="font-size:8px;color:var(--text-faint);">R$<span id="term-atual">0</span> acumulado</div>
+        <div style="font-size:8px;color:var(--text-faint);">Meta: R$10.000</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+        <div class="panel-label" style="margin-bottom:0;font-size:8px;"><span class="num">↳</span> Acumulado trimestre</div>
+        <input type="number" id="trim-input" min="0" value="0"
+          style="width:70px;background:var(--surface2);border:1px solid var(--border);color:var(--amber);
+                 font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;"
+          oninput="calcTrimestre()">
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
       <div class="panel-label" style="margin-bottom:0;"><span class="num">↳</span> Sessões na semana</div>
       <input type="number" id="sessoes-input" min="0" max="40" value="5"
         style="width:40px;background:var(--surface2);border:1px solid var(--border);color:var(--amber);
                font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;"
         oninput="calcFinanceiro()">
     </div>
-    <div class="fin-meta" id="fin-meta">média R$275/sessão</div>
+    <div class="fin-meta" id="fin-meta">média R$275/sessão · Casos Clínicos R$47/venda</div>
   </div>
 
   <!-- PANEL 7: PROJETO ATIVO + META CONTEÚDO -->
@@ -1162,7 +1198,11 @@
     <textarea class="nota-area" id="nota-area" placeholder="O que ficou da escuta de hoje..."></textarea>
     <div class="nota-footer">
       <span class="nota-chars"><span id="nota-count">0</span> caracteres</span>
-      <button class="nota-save" onclick="saveNota()">Salvar nota</button>
+      <div style="display:flex;gap:6px;">
+        <button class="nota-save" onclick="exportTXT()">↓ TXT</button>
+        <button class="nota-save" onclick="exportPDF()">↓ PDF</button>
+        <button class="nota-save" onclick="saveNota()">Salvar</button>
+      </div>
     </div>
   </div>
 
@@ -1271,14 +1311,38 @@
   }
 
   // FINANCEIRO
+  let vendasCasos = 0;
+  const PRECO_CASO = 47;
+
+  function addVenda(n) {
+    vendasCasos = Math.max(0, vendasCasos + n);
+    calcFinanceiro();
+  }
+
+  function calcTrimestre() {
+    const acumulado = parseFloat(document.getElementById('trim-input').value) || 0;
+    const meta = 10000;
+    const pct = Math.min(100, Math.round((acumulado / meta) * 100));
+    document.getElementById('term-fill').style.width = pct + '%';
+    document.getElementById('term-pct').textContent = pct + '%';
+    document.getElementById('term-atual').textContent = acumulado.toLocaleString('pt-BR');
+  }
+
   function calcFinanceiro() {
     const sessoes = parseInt(document.getElementById('sessoes-input').value) || 0;
     const media = 275;
     const semana = sessoes * media;
     const mes = semana * 4;
+    const totalCasos = vendasCasos * PRECO_CASO;
+    const totalSemana = semana + totalCasos;
+
     document.getElementById('fin-semana').textContent = semana.toLocaleString('pt-BR');
     document.getElementById('fin-semana-sub').textContent = `${sessoes} sessões × R$${media}`;
     document.getElementById('fin-mes').textContent = mes.toLocaleString('pt-BR');
+    document.getElementById('fin-casos').textContent = totalCasos.toLocaleString('pt-BR');
+    document.getElementById('fin-casos-n').textContent = vendasCasos;
+    document.getElementById('fin-total').textContent = totalSemana.toLocaleString('pt-BR');
+
     const now = new Date();
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
@@ -1319,6 +1383,103 @@
     document.getElementById('nota-count').textContent = this.value.length;
     document.getElementById('nota-saved').style.display = 'none';
   });
+
+  function exportTXT() {
+    const now = new Date();
+    const data = now.toLocaleDateString('pt-BR');
+    const hora = now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    const nota = document.getElementById('nota-area').value || '—';
+
+    const hoje = now.toISOString().slice(0,10);
+    const atendimentos = AGENDA.filter(e => e.date === hoje);
+    const listaAt = atendimentos.length
+      ? atendimentos.map(e => `  ${e.time} · ${e.name}`).join('\n')
+      : '  Nenhum atendimento registrado';
+
+    const sessoes = parseInt(document.getElementById('sessoes-input').value) || 0;
+    const finSemana = document.getElementById('fin-semana').textContent;
+    const finCasos = document.getElementById('fin-casos').textContent;
+    const trimPct = document.getElementById('term-pct').textContent;
+
+    const conteudo = `PAULA OS — RESUMO DO DIA
+════════════════════════════
+Data: ${data} · ${hora}
+
+ATENDIMENTOS DE HOJE
+${listaAt}
+
+FINANCEIRO DA SEMANA
+  Sessões: ${sessoes} · R$${finSemana}
+  Casos Clínicos: R$${finCasos}
+  Meta trimestral: ${trimPct}
+
+NOTA CLÍNICA
+${nota}
+
+════════════════════════════
+Gerado por Paula OS`;
+
+    const blob = new Blob([conteudo], {type:'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `paula-os-${hoje}.txt`;
+    a.click();
+  }
+
+  function exportPDF() {
+    const now = new Date();
+    const data = now.toLocaleDateString('pt-BR');
+    const hora = now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    const nota = document.getElementById('nota-area').value || '—';
+    const hoje = now.toISOString().slice(0,10);
+    const atendimentos = AGENDA.filter(e => e.date === hoje);
+    const listaAt = atendimentos.length
+      ? atendimentos.map(e => `<tr><td style="padding:4px 8px;color:#C8A96E;">${e.time}</td><td style="padding:4px 8px;">${e.name}</td></tr>`).join('')
+      : '<tr><td colspan="2" style="padding:4px 8px;color:#666;">Nenhum atendimento</td></tr>';
+
+    const sessoes = parseInt(document.getElementById('sessoes-input').value) || 0;
+    const finSemana = document.getElementById('fin-semana').textContent;
+    const finCasos = document.getElementById('fin-casos').textContent;
+    const finTotal = document.getElementById('fin-total').textContent;
+    const trimPct = document.getElementById('term-pct').textContent;
+    const trimAtual = document.getElementById('term-atual').textContent;
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+  body{font-family:'Georgia',serif;background:#0e0f0d;color:#e8e4d8;padding:40px;max-width:700px;margin:0 auto;}
+  h1{font-size:28px;font-weight:300;letter-spacing:0.05em;color:#C8A96E;margin-bottom:4px;}
+  .sub{font-size:11px;color:#666;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:32px;}
+  h2{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#C8A96E;margin:24px 0 8px;border-bottom:1px solid #222;padding-bottom:6px;}
+  table{width:100%;border-collapse:collapse;}
+  td{font-size:13px;}
+  .nota{font-style:italic;font-size:15px;line-height:1.8;color:#c8c4b8;white-space:pre-wrap;}
+  .fin-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid #1a1a1a;}
+  .fin-val{color:#C8A96E;}
+  .footer{margin-top:40px;font-size:9px;color:#444;letter-spacing:0.1em;text-transform:uppercase;text-align:center;}
+</style></head><body>
+<h1>Paula OS</h1>
+<div class="sub">Resumo · ${data} · ${hora}</div>
+
+<h2>Atendimentos de Hoje</h2>
+<table>${listaAt}</table>
+
+<h2>Financeiro da Semana</h2>
+<div class="fin-row"><span>Sessões (${sessoes})</span><span class="fin-val">R$${finSemana}</span></div>
+<div class="fin-row"><span>Casos Clínicos</span><span class="fin-val">R$${finCasos}</span></div>
+<div class="fin-row"><span>Total semana</span><span class="fin-val">R$${finTotal}</span></div>
+<div class="fin-row"><span>Meta trimestral ABR–JUN</span><span class="fin-val">R$${trimAtual} · ${trimPct}</span></div>
+
+<h2>Nota Clínica</h2>
+<div class="nota">${nota.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+
+<div class="footer">Paula OS v1.0 · casacudar.github.io/paula-os</div>
+</body></html>`;
+
+    const w = window.open('','_blank');
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => w.print(), 500);
+  }
 
   function saveNota() {
     const nota = document.getElementById('nota-area').value;
@@ -1575,6 +1736,7 @@
   buildWeek();
   calcFinanceiro();
   calcSessoesHoje();
+  calcTrimestre();
   renderGarmin();
 
   // Frase muda a cada 30min
