@@ -1193,7 +1193,7 @@
   </div>
 
   <!-- PANEL 8: NOTA CLÍNICA -->
-  <div class="panel panel-nota" style="grid-column:1/4;grid-row:4;">
+  <div class="panel panel-nota" style="grid-column:1/3;grid-row:4;">
     <div class="panel-label"><span><span class="num">08 //</span> NOTA DO DIA</span><span id="nota-saved" style="color:var(--green);font-size:8px;display:none;">● salvo</span></div>
     <textarea class="nota-area" id="nota-area" placeholder="O que ficou da escuta de hoje..."></textarea>
     <div class="nota-footer">
@@ -1203,6 +1203,36 @@
         <button class="nota-save" onclick="exportPDF()">↓ PDF</button>
         <button class="nota-save" onclick="saveNota()">Salvar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- PANEL 9: ESCUTA -->
+  <div class="panel" style="grid-column:3;grid-row:4;">
+    <div class="panel-label">
+      <span><span class="num">09 //</span> ESCUTA</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <select id="escuta-cat" onchange="loadEscuta()"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);
+                 font-family:var(--font-mono);font-size:8px;padding:2px 4px;border-radius:1px;cursor:pointer;">
+          <option value="mentalhealth">Saúde Mental</option>
+          <option value="psicanalise">Psicanálise</option>
+          <option value="ia">IA & Claude</option>
+          <option value="tech">Tech</option>
+          <option value="academico">Acadêmico</option>
+          <option value="nyt">NYT</option>
+          <option value="flamengo">Flamengo</option>
+        </select>
+        <button onclick="loadEscuta()" style="background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:10px;">↻</button>
+      </div>
+    </div>
+    <div id="escuta-list" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;">
+      <div style="color:var(--text-faint);font-size:9px;text-align:center;padding:20px;">Carregando...</div>
+    </div>
+    <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);text-align:right;">
+      <a href="https://noticiaparticular.lovable.app/" target="_blank"
+        style="font-size:8px;color:var(--text-faint);letter-spacing:0.08em;text-decoration:none;text-transform:uppercase;">
+        Abrir Escuta completo →
+      </a>
     </div>
   </div>
 
@@ -1496,7 +1526,89 @@ Gerado por Paula OS`;
     document.getElementById('nota-count').textContent = saved.length;
   }
 
-  // ─── SPOTIFY (PKCE) ────────────────────────────────────────
+  // ─── ESCUTA ────────────────────────────────────────────────
+  const ESCUTA_FEEDS = {
+    mentalhealth: [
+      { url: 'https://www.psychologytoday.com/us/front/feed', name: 'Psychology Today' },
+      { url: 'https://www.apa.org/news/press/releases/apa-press.rss', name: 'APA' },
+    ],
+    psicanalise: [
+      { url: 'https://www.scielo.br/feed/rssd/?pid=0102-7972&lang=en', name: 'SciELO' },
+    ],
+    ia: [
+      { url: 'https://www.anthropic.com/news.rss', name: 'Anthropic' },
+      { url: 'https://simonwillison.net/atom/everything/', name: 'Simon Willison' },
+    ],
+    tech: [
+      { url: 'https://www.theverge.com/rss/index.xml', name: 'The Verge' },
+      { url: 'https://www.wired.com/feed/rss', name: 'Wired' },
+    ],
+    academico: [
+      { url: 'https://news.stanford.edu/feed/', name: 'Stanford' },
+      { url: 'https://www.cam.ac.uk/news/feed', name: 'Cambridge' },
+    ],
+    nyt: [
+      { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Health.xml', name: 'NYT Saúde' },
+      { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Books.xml', name: 'NYT Livros' },
+    ],
+    flamengo: [
+      { url: 'https://www.colunadofla.com/feed/', name: 'Coluna do Fla' },
+      { url: 'https://ge.globo.com/rss/flamengo/', name: 'GE Flamengo' },
+    ],
+  };
+
+  function timeAgoEscuta(dateStr) {
+    const d = new Date(dateStr);
+    const s = (Date.now() - d.getTime()) / 1000;
+    if (s < 3600) return `${Math.floor(s/60)}m`;
+    if (s < 86400) return `${Math.floor(s/3600)}h`;
+    return `${Math.floor(s/86400)}d`;
+  }
+
+  async function loadEscuta() {
+    const cat = document.getElementById('escuta-cat').value;
+    const feeds = ESCUTA_FEEDS[cat] || [];
+    const list = document.getElementById('escuta-list');
+    list.innerHTML = '<div style="color:var(--text-faint);font-size:9px;text-align:center;padding:16px;">Carregando...</div>';
+
+    const API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+    let articles = [];
+
+    await Promise.all(feeds.map(async (feed) => {
+      try {
+        const res = await fetch(`${API}${encodeURIComponent(feed.url)}&count=5`);
+        const data = await res.json();
+        if (data.status === 'ok' && data.items) {
+          articles.push(...data.items.slice(0,4).map(item => ({
+            title: item.title,
+            link: item.link,
+            date: item.pubDate,
+            source: feed.name,
+          })));
+        }
+      } catch(e) {}
+    }));
+
+    articles.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    if (articles.length === 0) {
+      list.innerHTML = '<div style="color:var(--text-faint);font-size:9px;text-align:center;padding:16px;">Nenhum artigo encontrado</div>';
+      return;
+    }
+
+    list.innerHTML = articles.slice(0,6).map(a => `
+      <a href="${a.link}" target="_blank" rel="noopener"
+        style="display:block;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;transition:opacity 0.15s;"
+        onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span style="font-size:7px;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);">${a.source}</span>
+          <span style="font-size:7px;color:var(--text-faint);font-family:var(--font-mono);">${timeAgoEscuta(a.date)}</span>
+        </div>
+        <div style="font-family:var(--font-serif);font-size:12px;line-height:1.4;color:var(--text);">${a.title}</div>
+      </a>
+    `).join('');
+  }
+  // ────────────────────────────────────────────────────────────
   const SPOTIFY_CLIENT_ID = '7155a0fd114240228ee286b3c072ea96';
   const SPOTIFY_REDIRECT  = 'https://casacudar.github.io/paula-os/paula-os.html';
   const SPOTIFY_SCOPES    = 'user-read-currently-playing user-read-playback-state user-modify-playback-state';
@@ -1738,6 +1850,7 @@ Gerado por Paula OS`;
   calcSessoesHoje();
   calcTrimestre();
   renderGarmin();
+  loadEscuta();
 
   // Frase muda a cada 30min
   setInterval(updateFrase, 1800000);
