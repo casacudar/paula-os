@@ -2006,6 +2006,8 @@ Gerado por Paula OS`;
     FRASES.splice(i, 1);
     renderFraseRows();
   }
+
+  function renderTarefaRows() {
     const items = [...document.querySelectorAll('.check-item')];
     const el = document.getElementById('cfg-tarefas');
     el.innerHTML = items.map((item, i) => {
