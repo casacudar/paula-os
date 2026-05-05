@@ -1536,6 +1536,13 @@
       <button class="config-add" onclick="addMetaRow()">+ Adicionar item</button>
     </div>
 
+    <!-- FRASES -->
+    <div class="config-section">
+      <div class="config-section-title">" Frases do Segundo Cérebro</div>
+      <div id="cfg-frases"></div>
+      <button class="config-add" onclick="addFraseRow()">+ Adicionar frase</button>
+    </div>
+
     <!-- FINANCEIRO -->
     <div class="config-section">
       <div class="config-section-title">$ Financeiro</div>
@@ -1561,7 +1568,7 @@
 <script>
   // RELÓGIO E DATA
   const FRASES = [
-    { text: "NEGOCIAÇÕES SÃO GANHAS POR QUEM SE IMPORTA MENOS"", origem: "Naval Ravikant" },
+    { text: "A solidão não é ausência de pessoas. É ausência de sentido no encontro.", origem: "Dicionário da Solidão" },
     { text: "O que não entra no prontuário muitas vezes é o que mais importa.", origem: "Notas Clínicas" },
     { text: "Escuto o que ainda não teve nome.", origem: "Paula Gonçalves" },
     { text: "O luto não é uma doença. É o preço do amor.", origem: "Casa do Luto" },
@@ -1890,6 +1897,7 @@ Gerado por Paula OS`;
     renderAgendaRows();
     renderTarefaRows();
     renderMetaRows();
+    renderFraseRows();
     document.getElementById('config-overlay').classList.add('open');
   }
 
@@ -1967,7 +1975,37 @@ Gerado por Paula OS`;
     el.appendChild(div);
   }
 
-  function renderTarefaRows() {
+  function renderFraseRows() {
+    const el = document.getElementById('cfg-frases');
+    el.innerHTML = FRASES.map((f, i) => `
+      <div style="margin-bottom:8px;border:1px solid var(--border);border-radius:1px;padding:8px;">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:start;">
+          <textarea id="frase-text-${i}" rows="2"
+            style="background:var(--surface2);border:1px solid var(--border);color:var(--text);
+                   font-family:var(--font-serif);font-style:italic;font-size:12px;padding:6px 8px;
+                   border-radius:1px;width:100%;resize:none;outline:none;line-height:1.5;">${f.text}</textarea>
+          <button class="config-remove" onclick="removeFraseRow(${i})">✕</button>
+        </div>
+        <input type="text" id="frase-origem-${i}" value="${f.origem}" placeholder="Origem (ex: Dicionário da Solidão)"
+          style="margin-top:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);
+                 font-family:var(--font-mono);font-size:9px;padding:4px 8px;border-radius:1px;width:100%;outline:none;">
+      </div>`).join('');
+  }
+
+  function addFraseRow() {
+    FRASES.push({ text: '', origem: '' });
+    renderFraseRows();
+    // Foca no novo campo
+    setTimeout(() => {
+      const last = document.getElementById(`frase-text-${FRASES.length-1}`);
+      if (last) last.focus();
+    }, 50);
+  }
+
+  function removeFraseRow(i) {
+    FRASES.splice(i, 1);
+    renderFraseRows();
+  }
     const items = [...document.querySelectorAll('.check-item')];
     const el = document.getElementById('cfg-tarefas');
     el.innerHTML = items.map((item, i) => {
@@ -2085,6 +2123,16 @@ Gerado por Paula OS`;
     document.getElementById('trim-input').value    = document.getElementById('cfg-trimestre').value;
     calcFinanceiro();
     calcTrimestre();
+
+    // Frases
+    const fraseEls = document.querySelectorAll('#cfg-frases > div');
+    FRASES.length = 0;
+    fraseEls.forEach((_, i) => {
+      const text   = document.getElementById(`frase-text-${i}`)?.value?.trim();
+      const origem = document.getElementById(`frase-origem-${i}`)?.value?.trim() || '';
+      if (text) FRASES.push({ text, origem });
+    });
+    updateFrase();
 
     // Salvar no localStorage
     localStorage.setItem('paula-os-config', JSON.stringify({
@@ -2414,8 +2462,8 @@ Gerado por Paula OS`;
     fc_min:    72,
     fc_max:    142,
     sono:      8.7,
-    vfc:       35,
-    bodyBattery: 58,
+    hrv:       35,
+    bodyBattery: 54,
     estresse:  23,
   };
 
