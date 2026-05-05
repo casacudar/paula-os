@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0045)file:///Users/paula/Downloads/paula-os_6.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PAULA OS</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="./paula-os_files/css2" rel="stylesheet">
 <style>
   :root {
     --bg: #1a2a35;
@@ -1101,13 +1101,11 @@
     <span id="top-city">PATOS DE MINAS</span>
     <span id="top-temp">—°C</span>
     <span id="top-net">—</span>
-    <span id="top-date"></span>
-    <span id="top-time"></span>
+    <span id="top-date">05/05/2026</span>
+    <span id="top-time">12:26</span>
     <button onclick="openConfig()" style="background:none;border:1px solid var(--border);color:var(--text-faint);
       font-family:var(--font-mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;
-      padding:3px 8px;cursor:pointer;border-radius:1px;transition:all 0.15s;"
-      onmouseover="this.style.borderColor='var(--amber-dim)';this.style.color='var(--amber)'"
-      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-faint)'">
+      padding:3px 8px;cursor:pointer;border-radius:1px;transition:all 0.15s;" onmouseover="this.style.borderColor=&#39;var(--amber-dim)&#39;;this.style.color=&#39;var(--amber)&#39;" onmouseout="this.style.borderColor=&#39;var(--border)&#39;;this.style.color=&#39;var(--text-faint)&#39;">
       ⚙ Config
     </button>
   </div>
@@ -1141,10 +1139,10 @@
   <!-- PANEL 2: SESSÃO -->
   <div class="panel panel-session">
     <div class="panel-label"><span><span class="num">02 //</span> SESSÃO</span></div>
-    <div class="session-greeting" id="greeting">Bom <em>dia</em>, Paula.</div>
+    <div class="session-greeting" id="greeting">Boa <em>tarde</em>, Paula.</div>
     <div class="session-meta">
-      <div class="session-date" id="session-date"></div>
-      <div class="session-clock"><span id="clock-h">00</span>:<span id="clock-m">00</span><span class="seconds" id="clock-s">00</span></div>
+      <div class="session-date" id="session-date">Terça · 5 de Maio de 2026 · Dia 125 de 365</div>
+      <div class="session-clock"><span id="clock-h">12</span>:<span id="clock-m">26</span><span class="seconds" id="clock-s">35</span></div>
     </div>
     <div class="session-frase">
       <p id="frase-text">"A solidão não é ausência de pessoas. É ausência de sentido no encontro."</p>
@@ -1186,22 +1184,22 @@
       <div class="rings">
         <div class="ring-wrap">
           <svg class="ring-svg" viewBox="0 0 52 52">
-            <circle class="ring-bg" cx="26" cy="26" r="22"/>
-            <circle class="ring-fill ring-amber" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="90" id="ring-move"/>
+            <circle class="ring-bg" cx="26" cy="26" r="22"></circle>
+            <circle class="ring-fill ring-amber" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="90" id="ring-move"></circle>
           </svg>
           <div class="ring-label">Mover</div>
         </div>
         <div class="ring-wrap">
           <svg class="ring-svg" viewBox="0 0 52 52">
-            <circle class="ring-bg" cx="26" cy="26" r="22"/>
-            <circle class="ring-fill ring-green" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="55" id="ring-exercise"/>
+            <circle class="ring-bg" cx="26" cy="26" r="22"></circle>
+            <circle class="ring-fill ring-green" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="55" id="ring-exercise"></circle>
           </svg>
           <div class="ring-label">Exercitar</div>
         </div>
         <div class="ring-wrap">
           <svg class="ring-svg" viewBox="0 0 52 52">
-            <circle class="ring-bg" cx="26" cy="26" r="22"/>
-            <circle class="ring-fill ring-teal" cx="26" cy="22" r="22" stroke-dasharray="138.2" stroke-dashoffset="110" id="ring-stand"/>
+            <circle class="ring-bg" cx="26" cy="26" r="22"></circle>
+            <circle class="ring-fill ring-teal" cx="26" cy="22" r="22" stroke-dasharray="138.2" stroke-dashoffset="110" id="ring-stand"></circle>
           </svg>
           <div class="ring-label">Levantar</div>
         </div>
@@ -1216,25 +1214,51 @@
 
   <!-- PANEL 4: CALENDÁRIO -->
   <div class="panel panel-calendar">
-    <div class="panel-label"><span><span class="num">04 //</span> CALENDÁRIO</span><span id="cal-month" style="color:var(--text-faint)"></span></div>
-    <div class="week-nav" id="week-nav"></div>
-    <div class="events-list" id="events-list"></div>
+    <div class="panel-label"><span><span class="num">04 //</span> CALENDÁRIO</span><span id="cal-month" style="color:var(--text-faint)">MAIO 2026</span></div>
+    <div class="week-nav" id="week-nav"><div class="week-day">
+        <div class="week-day-name">Dom</div>
+        <div class="week-day-num">3</div>
+        <div style="height:7px;"></div>
+      </div><div class="week-day">
+        <div class="week-day-name">Seg</div>
+        <div class="week-day-num">4</div>
+        <div style="width:4px;height:4px;border-radius:50%;background:var(--teal-light);margin:3px auto 0;"></div>
+      </div><div class="week-day today">
+        <div class="week-day-name">Ter</div>
+        <div class="week-day-num">5</div>
+        <div style="height:7px;"></div>
+      </div><div class="week-day">
+        <div class="week-day-name">Qua</div>
+        <div class="week-day-num">6</div>
+        <div style="width:4px;height:4px;border-radius:50%;background:var(--teal-light);margin:3px auto 0;"></div>
+      </div><div class="week-day">
+        <div class="week-day-name">Qui</div>
+        <div class="week-day-num">7</div>
+        <div style="width:4px;height:4px;border-radius:50%;background:var(--teal-light);margin:3px auto 0;"></div>
+      </div><div class="week-day">
+        <div class="week-day-name">Sex</div>
+        <div class="week-day-num">8</div>
+        <div style="width:4px;height:4px;border-radius:50%;background:var(--teal-light);margin:3px auto 0;"></div>
+      </div><div class="week-day">
+        <div class="week-day-name">Sáb</div>
+        <div class="week-day-num">9</div>
+        <div style="height:7px;"></div>
+      </div></div>
+    <div class="events-list" id="events-list"><div style="padding:16px;color:var(--text-faint);font-size:10px;text-align:center;letter-spacing:0.08em;">Nenhum atendimento</div></div>
   </div>
 
   <!-- PANEL 5: YOUTUBE -->
   <div class="panel panel-playing">
     <div class="panel-label"><span><span class="num">05 //</span> NOW PLAYING</span><span style="color:var(--red);font-size:8px;">▶ YOUTUBE</span></div>
     <div id="yt-player" style="position:relative;width:100%;cursor:pointer;border:1px solid var(--border);border-radius:2px;overflow:hidden;background:#000;" onclick="playYT()">
-      <img id="yt-thumb" src="https://img.youtube.com/vi/8kS1T7lwB0k/hqdefault.jpg"
-        style="width:100%;display:block;opacity:0.85;transition:opacity 0.2s;"
-        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
+      <img id="yt-thumb" src="./paula-os_files/hqdefault.jpg" style="width:100%;display:block;opacity:0.85;transition:opacity 0.2s;" onmouseover="this.style.opacity=&#39;1&#39;" onmouseout="this.style.opacity=&#39;0.85&#39;">
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
         <div style="width:48px;height:48px;background:rgba(200,169,110,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;">
           <span style="color:#1a2a35;font-size:18px;margin-left:4px;">▶</span>
         </div>
       </div>
       <div id="yt-iframe-wrap" style="display:none;position:absolute;inset:0;">
-        <iframe id="yt-iframe" style="width:100%;height:100%;border:none;" allow="autoplay;encrypted-media" allowfullscreen></iframe>
+        <iframe id="yt-iframe" style="width:100%;height:100%;border:none;" allow="autoplay;encrypted-media" allowfullscreen="" src="./paula-os_files/saved_resource.html"></iframe>
       </div>
     </div>
     <div style="margin-top:10px;">
@@ -1242,8 +1266,7 @@
       <div style="font-size:8px;color:var(--text-faint);letter-spacing:0.06em;margin-top:3px;">Casa Cuidar · Paula Gonçalves</div>
     </div>
     <div style="margin-top:10px;display:flex;gap:6px;">
-      <input id="yt-url-input" type="text" placeholder="Cole URL do YouTube..."
-        style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+      <input id="yt-url-input" type="text" placeholder="Cole URL do YouTube..." style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);
                font-family:var(--font-mono);font-size:9px;padding:5px 8px;border-radius:1px;outline:none;">
       <button onclick="setYT()" style="background:var(--amber-faint);border:1px solid var(--amber-dim);
         color:var(--amber);font-family:var(--font-mono);font-size:8px;letter-spacing:0.08em;
@@ -1296,10 +1319,8 @@
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="fin-value" style="color:var(--amber);"><span class="prefix">R$</span><span id="fin-mes-acum">0</span></div>
           <div style="font-size:8px;color:var(--amber-dim);">semanas anteriores +</div>
-          <input type="number" id="fin-semanas-ant" min="0" value="0" placeholder="0"
-            style="width:70px;background:var(--surface2);border:1px solid var(--amber-dim);color:var(--amber);
-                   font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;"
-            oninput="calcMesAcumulado()">
+          <input type="number" id="fin-semanas-ant" min="0" value="0" placeholder="0" style="width:70px;background:var(--surface2);border:1px solid var(--amber-dim);color:var(--amber);
+                   font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;" oninput="calcMesAcumulado()">
           <div style="font-size:8px;color:var(--amber-dim);">R$ de semanas passadas</div>
         </div>
       </div>
@@ -1320,19 +1341,15 @@
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
         <div class="panel-label" style="margin-bottom:0;font-size:8px;"><span class="num">↳</span> Acumulado trimestre</div>
-        <input type="number" id="trim-input" min="0" value="0"
-          style="width:70px;background:var(--surface2);border:1px solid var(--border);color:var(--amber);
-                 font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;"
-          oninput="calcTrimestre()">
+        <input type="number" id="trim-input" min="0" value="0" style="width:70px;background:var(--surface2);border:1px solid var(--border);color:var(--amber);
+                 font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;" oninput="calcTrimestre()">
       </div>
     </div>
 
     <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
       <div class="panel-label" style="margin-bottom:0;"><span class="num">↳</span> Sessões na semana</div>
-      <input type="number" id="sessoes-input" min="0" max="40" value="5"
-        style="width:40px;background:var(--surface2);border:1px solid var(--border);color:var(--amber);
-               font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;"
-        oninput="calcFinanceiro()">
+      <input type="number" id="sessoes-input" min="0" max="40" value="5" style="width:40px;background:var(--surface2);border:1px solid var(--border);color:var(--amber);
+               font-family:var(--font-mono);font-size:11px;padding:3px 6px;border-radius:1px;text-align:center;" oninput="calcFinanceiro()">
     </div>
     <div class="fin-meta" id="fin-meta">média R$275/sessão · Casos Clínicos R$79/venda</div>
   </div>
@@ -1412,12 +1429,11 @@
     <div class="panel-label">
       <span><span class="num">09 //</span> ESCUTA</span>
       <div style="display:flex;gap:6px;align-items:center;">
-        <select id="escuta-cat" onchange="loadEscuta()"
-          style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);
+        <select id="escuta-cat" onchange="loadEscuta()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);
                  font-family:var(--font-mono);font-size:8px;padding:2px 4px;border-radius:1px;cursor:pointer;">
           <option value="mentalhealth">Saúde Mental</option>
           <option value="psicanalise">Psicanálise</option>
-          <option value="ia">IA & Claude</option>
+          <option value="ia">IA &amp; Claude</option>
           <option value="tech">Tech</option>
           <option value="academico">Acadêmico</option>
           <option value="nyt">NYT</option>
@@ -1430,8 +1446,7 @@
       <div style="color:var(--text-faint);font-size:9px;text-align:center;padding:20px;">Carregando...</div>
     </div>
     <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);text-align:right;">
-      <a href="https://noticiaparticular.lovable.app/" target="_blank"
-        style="font-size:8px;color:var(--text-faint);letter-spacing:0.08em;text-decoration:none;text-transform:uppercase;">
+      <a href="https://noticiaparticular.lovable.app/" target="_blank" style="font-size:8px;color:var(--text-faint);letter-spacing:0.08em;text-decoration:none;text-transform:uppercase;">
         Abrir Escuta completo →
       </a>
     </div>
@@ -2521,5 +2536,6 @@ Gerado por Paula OS`;
   // Frase muda a cada 30min
   setInterval(updateFrase, 1800000);
 </script>
-</body>
-</html>
+
+
+</body></html>
